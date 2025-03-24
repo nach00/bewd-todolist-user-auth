@@ -19,3 +19,6 @@
 .DS_Store
 
 db/*.sqlite3
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

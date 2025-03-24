@@ -6,6 +6,10 @@ Rails.application.routes.draw do
   # Add routes below this line
 
   # TASKS
+  resources :tasks
+  get '/my_tasks' => 'tasks#index'
+
+  get '/my_tasks' => 'tasks#index_by_current_user'
   get    '/tasks'                    => 'tasks#index'
   post   '/tasks'                    => 'tasks#create'
   delete '/tasks/:id'                => 'tasks#destroy'

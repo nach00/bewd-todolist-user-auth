@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.2'
+ruby '3.4.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.6.1'
+gem 'rails', '~> 8.0.2'
 # Use Puma as the app server
 gem 'puma', '>= 5.6.4'
 # Use SCSS for stylesheets
@@ -66,7 +66,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.1'
 
   # Use sqlite3 as the database for Active Record
-  gem 'sqlite3', '~> 1.4'
+  gem 'sqlite3', '~> 2.6.0'
 end
 
 group :production do
@@ -75,3 +75,21 @@ group :production do
 end
 
 gem 'concurrent-ruby', '1.3.4'
+gem 'mutex_m'
+
+gem 'tailwindcss-rails'
+
+# Add JsBundling for modern JavaScript handling
+gem 'jsbundling-rails'
+
+# Add Stimulus for JavaScript sprinkles
+gem 'stimulus-rails'
+
+# Update ActionCable reference
+gem 'actioncable', '~> 8.0.2'
+
+# For system testing
+group :test do
+  gem 'capybara', '~> 3.39'
+  gem 'selenium-webdriver', '~> 4.16'
+end

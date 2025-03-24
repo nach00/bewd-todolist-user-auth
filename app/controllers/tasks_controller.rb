@@ -1,7 +1,14 @@
 class TasksController < ApplicationController
   def index
-    @tasks = Task.all
-    render 'tasks/index' # can be omitted
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
+
+    if session
+      @tasks = session.user.tasks
+      render 'tasks/index'
+    else
+      render json: { error: 'Not authenticated' }, status: :unauthorized
+    end
   end
 
   def index_by_current_user
@@ -10,11 +17,24 @@ class TasksController < ApplicationController
 
     if session
       @tasks = session.user.tasks
-      render 'tasks/index' # can be omitted
+      render json: {
+        tasks: @tasks.as_json(only: %i[id content completed created_at updated_at])
+      }
     else
       render json: { tasks: [] }
     end
   end
+  # def index_by_current_user
+  #   token = cookies.signed[:todolist_session_token]
+  #   session = Session.find_by(token: token)
+  #
+  #   if session
+  #     @tasks = session.user.tasks
+  #     render 'tasks/index'
+  #   else
+  #     render json: { tasks: [] }
+  #   end
+  # end
 
   def create
     token = cookies.signed[:todolist_session_token]
@@ -25,7 +45,7 @@ class TasksController < ApplicationController
       @task = user.tasks.new(task_params)
 
       if @task.save
-        render 'tasks/create' # can be omitted
+        render 'tasks/create'
       else
         render json: { success: false }
       end
@@ -35,9 +55,12 @@ class TasksController < ApplicationController
   end
 
   def destroy
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
+
     @task = Task.find_by(id: params[:id])
 
-    if @task&.destroy
+    if session && session.user.tasks.include?(@task) && @task&.destroy
       render json: { success: true }
     else
       render json: { success: false }
@@ -45,15 +68,29 @@ class TasksController < ApplicationController
   end
 
   def mark_complete
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
+
     @task = Task.find_by(id: params[:id])
 
-    render 'tasks/update' if @task&.update(completed: true)
+    if session && session.user.tasks.include?(@task) && @task&.update(completed: true)
+      render 'tasks/update'
+    else
+      render json: { success: false }
+    end
   end
 
   def mark_active
+    token = cookies.signed[:todolist_session_token]
+    session = Session.find_by(token: token)
+
     @task = Task.find_by(id: params[:id])
 
-    render 'tasks/update' if @task&.update(completed: false)
+    if session && session.user.tasks.include?(@task) && @task&.update(completed: false)
+      render 'tasks/update'
+    else
+      render json: { success: false }
+    end
   end
 
   private
